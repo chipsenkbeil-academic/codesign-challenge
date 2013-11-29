@@ -188,7 +188,7 @@ CollisionChecker COLLISION_CHECKER(.iClk(wClock), .iTarget(wTarget),
 always @(posedge clk, posedge reset) begin
     if (reset) begin
         rDataA <= 32'd0;  
-    end else begin
+    end else if (currentState == STATE_IDLE) begin
         rDataA <= dataa;
     end
 end
@@ -197,7 +197,7 @@ end
 always @(posedge clk, posedge reset) begin
     if (reset) begin
         rDataB <= 32'd0;  
-    end else begin
+    end else if (currentState == STATE_IDLE) begin
         rDataB <= datab;
     end
 end
@@ -206,7 +206,7 @@ end
 always @(posedge clk, posedge reset) begin
     if (reset) begin
         rInstruction <= 1'b0;  
-    end else begin
+    end else if (currentState == STATE_IDLE) begin
         rInstruction <= n;
     end
 end
@@ -215,10 +215,12 @@ end
 always @(posedge clk, posedge reset) begin
     if (reset) begin
         flag_Loading <= 1'b0;  
-    end else begin // Loading up to and including the 16th byte, but
-                   // need to set loading flag low at index 15
-        flag_Loading <= (rDataCounter <= 14 & 
-                         currentState == STATE_LOAD_MESSAGE);
+    end else begin 
+        // Loading up to and including the 16th byte, but
+        // need to set loading flag low at index 15
+        // TODO: Clean up this handling, shouldn't have to check for
+        //       an earlier value like 13 to get timing right
+        flag_Loading <= (rDataCounter <= 13);
     end
 end
 
@@ -273,13 +275,19 @@ always @(posedge clk, posedge reset) begin
     end
 end
 
-// Update message counter
+// Update message counter if there was no collision
 always @(posedge clk, posedge reset) begin
     if (reset) begin
-        rMessageCounter <= 32'b0;  
-    end else if (rInstruction == TYPE_EXECUTE & 
-                 currentState == STATE_DONE) begin
+        rMessageCounter <= 32'b0;
+        
+    // Increment only when we do not find a collision
+    end else if (currentState == STATE_CHECK_COLLISION &
+                 ~flag_Collision) begin
         rMessageCounter <= rMessageCounter + 1'b1;
+        
+    // Reset when we are starting over
+    end else if (currentState == STATE_IDLE) begin
+        rMessageCounter <= 32'b0;
     end
 end
 
