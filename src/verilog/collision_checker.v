@@ -53,9 +53,11 @@ assign oResult = rResult;
 // Setup the 32-bit check for zeros as the MSBs of the incoming data.
 //
 assign wResult[0] = ~iData[159];
-for (i = 1; i < 32; i = i + 1) begin
-    assign wResult[i] = wResult[i-1] & ~iData[159-i];
-end
+generate
+	for (i = 1; i < 32; i = i + 1) begin : AND_FOR_LOOP
+		 assign wResult[i] = wResult[i-1] & ~iData[159-i];
+	end
+endgenerate
 
 //
 // Sync the results with the clock, which should be the oReady output from the
