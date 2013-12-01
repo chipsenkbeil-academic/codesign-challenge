@@ -97,7 +97,7 @@ output [31:0] result;
 // ============================================================================
 
 // Efficiency scaling parameters (increase the number of searchers we have)
-parameter       TOTAL_SEARCHERS             = 1;
+parameter       TOTAL_SEARCHERS             = 32;
 parameter       SEARCH_CHUNK                = 32'hFFFFFFFF / TOTAL_SEARCHERS;
 
 // Types associated with the selection bits
@@ -181,7 +181,7 @@ generate
         // 3. Carry the previous accepted result forward
         assign wFilteredResult[j] = (wSearchDone[j]) ? wSearchResult[j] :
                                     (j == TOTAL_SEARCHERS - 1) ? 32'd0  :
-                                    wFilteredResult[j - 1];
+                                    wFilteredResult[j + 1];
     end
 endgenerate
 
@@ -230,15 +230,19 @@ generate
             .start(wSearchStart),
             
             // The target data should be found in dataa for starting a search
-            .target(dataa), 
+            .target(dataa[4:0]), 
             
             // The message comes from the accumulation made from earlier
             // base message instruction calls
             .message(wMessage),
 
             // To parallelize the search, start each searcher at a different
-            // position in the counter (evenly spaced)
-            .counter(i * SEARCH_CHUNK),
+            // position (all set at close as possible to the front)
+            .counter(i),
+            
+            // Set increment to make sure none of the searchers run into each
+            // other
+            .increment(TOTAL_SEARCHERS),
             
             .digests_computed(wDigestsComputed[i]),
             .done(wSearchDone[i]), 

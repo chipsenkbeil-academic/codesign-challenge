@@ -11,31 +11,33 @@
  * Input
  * -----
  *
- * clk:     The clock used to drive the search
- * reset:   Used to reset the state of the search
- * start:   Used to indicate the beginning of a new search
+ * clk:         The clock used to drive the search
+ * reset:       Used to reset the state of the search
+ * start:       Used to indicate the beginning of a new search
  *
- * target:  The 5-bit target indicating the total zeros that identify a 
-            collision
- * message: The 512-bit message used as the base to compute digests
- * counter: The 32-bit message counter used as the base start value for
- *          the counter before incrementing
+ * target:      The 5-bit target indicating the total zeros that identify a 
+                collision
+ * message:     The 512-bit message used as the base to compute digests
+ * counter:     The 32-bit message counter used as the base start value for
+ *              the counter before incrementing
+ * increment:   The 32-bit value with which to increment the counter after
+ *              each digest computation
  *
  * Output
  * ------
  *
  * digests_computed: The total number of SHA-1 digests computed thus far
  *
- * done:    Used to indicate that the search has finished and the output
- *          of the search is now valid
- * result:  A 32-bit output value returned as a result of the search's
- *          completion
+ * done:        Used to indicate that the search has finished and the output
+ *              of the search is now valid
+ * result:      A 32-bit output value returned as a result of the search's
+ *              completion
  */
 module CollisionSearcher(
-    clk, reset, start,          // Execution inputs
-    target, message, counter,   // Data inputs
-    digests_computed,           // Progress outputs
-    done, result                // Result outputs
+    clk, reset, start,                      // Execution inputs
+    target, message, counter, increment,    // Data inputs
+    digests_computed,                       // Progress outputs
+    done, result                            // Result outputs
 );
 
 // ============================================================================
@@ -48,6 +50,7 @@ input         start;
 input [4:0]   target;
 input [511:0] message;
 input [31:0]  counter;
+input [31:0]  increment;
 
 output [31:0] digests_computed;
 
@@ -89,6 +92,7 @@ reg [3:0]    nextState;
 reg [4:0]    rTarget;
 reg [31:0]   rMessageCounter;
 reg [511:0]  rMessage;
+reg [31:0]   rIncrement;
 
 // Counter used for loading data into SHA-1
 reg [3:0]    rDataCounter;
@@ -222,6 +226,15 @@ always @(posedge clk, posedge reset) begin
     end
 end
 
+// Update increment ONLY if finished with last process
+always @(posedge clk, posedge reset) begin
+    if (reset) begin
+        rIncrement <= 32'b0;  
+    end else if (currentState == STATE_IDLE) begin
+        rIncrement <= increment;
+    end
+end
+
 // Update data counter
 always @(posedge clk, posedge reset) begin
     if (reset) begin
@@ -241,7 +254,7 @@ always @(posedge clk, posedge reset) begin
     // Increment only when we do not find a collision
     end else if (currentState == STATE_CHECK_COLLISION &
                  ~flag_Collision) begin
-        rMessageCounter <= rMessageCounter + 1'b1;
+        rMessageCounter <= rMessageCounter + rIncrement;
         
     // Reset to input base when we are starting over
     end else if (currentState == STATE_IDLE) begin
