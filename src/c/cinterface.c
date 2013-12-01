@@ -1,3 +1,13 @@
+/*
+ * Written by Robert "Chip" Senkbeil
+ *         on 11/30/2013
+ * Version 1.1
+ */
+
+// ============================================================================
+// = INCLUDES
+// ============================================================================
+
 #include "cinterface.h"
 #include "system.h"
 
@@ -5,16 +15,25 @@
 #include <stdio.h>
 #include <string.h>
 
-// Friendly wrappers for the custom instruction
-#define SEND_BASE_BYTES(A,B)  ALT_CI_FIND_COLLISION_0(0,A,B)
-#define GET_COLLISION(target) ALT_CI_FIND_COLLISION_0(1,target,0x0)
+// ============================================================================
+// = CUSTOM INSTRUCTION WRAPPERS
+// ============================================================================
 
-unsigned int currentTarget;
-unsigned int currentCount;
+#define SEND_BASE_BYTES(A,B)            ALT_CI_FIND_COLLISION_0(0,A,B)
+#define START_COLLISION_SEARCH(target)  ALT_CI_FIND_COLLISION_0(1,target,0x0)
+#define GET_COLLISION()                 ALT_CI_FIND_COLLISION_0(2,0x0,0x0)
+#define FOUND_COLLISION()               ALT_CI_FIND_COLLISION_0(3,0x0,0x0)
+#define GET_DIGESTS_COMPUTED()          ALT_CI_FIND_COLLISION_0(4,0x0,0x0)
 
-///////////////////////////////////////////////////////////////////////////////
-// PUBLIC API
-///////////////////////////////////////////////////////////////////////////////
+// ============================================================================
+// = LOCALS
+// ============================================================================
+
+static unsigned int currentTarget;
+
+// ============================================================================
+// = PUBLIC API
+// ============================================================================
 
 /*
  * Computes the current string (assuming 48 byte length) and determines the
@@ -66,10 +85,7 @@ void settarget(int n) {
  * Returns the number of SHA-1 digests computed thus far.
  */
 int shacomputed() {
-    // NOTE: Was previously updated in software, need to figure out how to
-    //       retrieve the value from hardware.
-    // TODO: Return SHA-1 digests computed.
-    return 1;
+    return GET_DIGESTS_COMPUTED();
 }
 
 /*
@@ -79,6 +95,13 @@ int shacomputed() {
  * is found.
  */
 int searchcollision() {
+    // Start the search for a collision
     // Target in hardware starts at base 0, so subtract 1 to align correctly
-    return GET_COLLISION(currentTarget-1);
+    START_COLLISION_SEARCH(currentTarget-1);
+    
+    // Spin until we have found a collision
+    while (!FOUND_COLLISION());
+
+    // Retrieve the discovered collision value
+    return GET_COLLISION();
 }
