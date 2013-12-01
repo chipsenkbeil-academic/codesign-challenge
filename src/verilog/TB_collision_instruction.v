@@ -19,7 +19,7 @@ module TB_collision_instruction;
     );
     
     initial begin
-        clk = 0;
+        clk = 1;
         clk_en = 1;
         reset = 1;
         start = 0;
@@ -65,6 +65,14 @@ module TB_collision_instruction;
                  n     = 3'd1;
             #200 start = 0;
                  
+            wait (done);
+            
+            // Have to send this once to get result filled with the correct
+            // status (there is no do--while loop in old Verilog)
+            #200 start = 1;
+                 n = 3'd3;
+            #200 start = 0;
+            
             wait (done);
             
             // Keep cycling until we find a collision

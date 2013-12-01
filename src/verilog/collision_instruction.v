@@ -122,12 +122,33 @@ wire            wSearchStart;
 wire [511:0]    wMessage;
 
 // Outputs of collision searchers
-wire [31:0]     wDigestsComputed    [0:TOTAL_SEACHERS-1];
-wire            wSearchDone         [0:TOTAL_SEACHERS-1];
-wire [31:0]     wSearchResult       [0:TOTAL_SEACHERS-1];
+// NOTE: wSearchDone must NOT be a net array since we use a unary operation
+//       on it!
+wire [31:0]     wDigestsComputed    [0:TOTAL_SEARCHERS-1];
+wire [TOTAL_SEARCHERS-1:0] wSearchDone; // ANNOYING THAT IT BREAKS OUR ALIGN
+wire [31:0]     wSearchResult       [0:TOTAL_SEARCHERS-1];
+
+// NOTE: This may be an unnecessarily-large expense, but couldn't think of
+//       a better way to get just one result
+wire [31:0]     wFilteredResult     [0:TOTAL_SEARCHERS-1];
+
+// NOTE: This may be an unnecessarily-large expense, but couldn't think of
+//       a better way to get a nice sum without making custom adders and
+//       generating a lot of them
+// Wires that keep track of the digest sum progressively
+wire [31:0]     wDigestSum          [0:TOTAL_SEARCHERS-1];
 
 // Represents the collective status of the search progress
 wire            wAnyDone;
+
+// Memory for our search results
+reg [31:0]      rLastResult;        // Contains the last result acquired
+reg             rSearching;         // Indicates whether currently searching
+reg [31:0]      rTotalDigests;      // Indicates how many digests have been
+                                    // calculated
+reg             rAnyDone;           // Value of wAnyDone, used to provide a
+                                    // clock cycle of delay before wiping our
+                                    // searchers
 
 // ============================================================================
 // = WIRE ASSIGNMENTS
@@ -145,6 +166,25 @@ assign wSearchStart = (n == TYPE_START_SEARCH) & start;
 // Combine all done signals to see if any searcher has finished
 assign wAnyDone = (| wSearchDone);
 
+// Only allow one result to be piped through if multiple searchers find a
+// solution at the same time (we will use the lowest searcher's result)
+generate
+    genvar j;
+    
+    // Work backwards since we want to keep the result of the earliest searcher
+    // who has acquired a collision
+    for (j = TOTAL_SEARCHERS - 1; j >= 0; j = j - 1) begin :FILTER_GENERATION
+        // 1. If the current searcher finished, we want to use that value since
+        //    it is from an earlier searcher than the last value
+        // 2. If the current searcher was the first to be checked, we want to
+        //    return zero to provide a base value for the other filters
+        // 3. Carry the previous accepted result forward
+        assign wFilteredResult[j] = (wSearchDone[j]) ? wSearchResult[j] :
+                                    (j == TOTAL_SEARCHERS - 1) ? 32'd0  :
+                                    wFilteredResult[j - 1];
+    end
+endgenerate
+
 // Passing on the instruction does not take any time, so we can simply say we
 // are finished when we get the start bit
 assign done     = start;
@@ -152,10 +192,10 @@ assign done     = start;
 // Result is assigned to a value based on the selection bits, indicating what we
 // would want to return
 assign result   = (n == TYPE_BASE_ADDRESS)              ? 32'd1         :
-                  (n == TYPE_EXECUTE)                   ? 32'd1         :
-                  (n == TYPE_RETRIEVE_COLLISION)        ? rSearchResult :
-                  (n == TYPE_HAS_FOUND_COLLISION)       ? rHasCollision :
-                  (n == TYPE_RETRIEVE_TOTAL_DIGESTS)    ? rDigests      :
+                  (n == TYPE_START_SEARCH)              ? 32'd1         :
+                  (n == TYPE_RETRIEVE_COLLISION)        ? rLastResult   :
+                  (n == TYPE_HAS_FOUND_COLLISION)       ? (!rSearching) :
+                  (n == TYPE_RETRIEVE_TOTAL_DIGESTS)    ? rTotalDigests :
                                                           32'd0;
 
 // ============================================================================
@@ -183,7 +223,7 @@ generate
             
             // Custom reset for the searchers, so that all will stop searching 
             // after a collision is found
-            .reset(reset | wAnyDone),
+            .reset(reset | rAnyDone),
             
             // Only send a start pulse if the instruction type indicates a
             // search should be started
@@ -204,7 +244,57 @@ generate
             .done(wSearchDone[i]), 
             .result(wSearchResult[i])
         );
+        
+        // First sum wire does not have anything but itself
+        if (i == 0) begin
+            assign wDigestSum[i] = wDigestsComputed[i];
+        end else begin
+            assign wDigestSum[i] = wDigestsComputed[i-1] + wDigestsComputed[i];
+        end
     end
 endgenerate
+
+// ============================================================================
+// = REGISTER LOGIC
+// ============================================================================
+
+// Update the last result when at least one searcher has finished
+always @(posedge wClock, posedge reset) begin
+    if (reset) begin
+        rLastResult <= 32'b0;
+    end else if (wAnyDone) begin
+        rLastResult <= wFilteredResult[0]; // Contains the earliest result
+    end
+end
+
+// Update search status based on a request to start searching and any indicator
+// that we have finished searching
+always @(posedge wClock, posedge reset) begin
+    if (reset) begin
+        rSearching <= 1'b0;
+    end else if (wSearchStart) begin
+        rSearching <= 1'b1;
+    end else if (wAnyDone) begin
+        rSearching <= 1'b0;
+    end
+end
+
+// Only update our digest counter while we are still searching
+always @(posedge wClock, posedge reset) begin
+    if (reset) begin
+        rTotalDigests <= 32'b0;
+    end else if (rSearching) begin // TODO: Check that this doesn't get reset because of delay in searching register
+        rTotalDigests <= wDigestSum[TOTAL_SEARCHERS - 1];
+    end
+end
+
+// Update our done register based on the output signal
+always @(posedge wClock, posedge reset) begin
+    if (reset) begin
+        rAnyDone <= 1'b0;
+    end else begin
+        rAnyDone <= wAnyDone;
+    end
+end
 
 endmodule
