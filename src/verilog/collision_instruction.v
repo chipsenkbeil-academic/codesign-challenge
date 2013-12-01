@@ -253,7 +253,7 @@ generate
         if (i == 0) begin
             assign wDigestSum[i] = wDigestsComputed[i];
         end else begin
-            assign wDigestSum[i] = wDigestsComputed[i-1] + wDigestsComputed[i];
+            assign wDigestSum[i] = wDigestSum[i-1] + wDigestsComputed[i];
         end
     end
 endgenerate

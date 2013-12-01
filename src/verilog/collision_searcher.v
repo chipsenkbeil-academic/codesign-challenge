@@ -137,12 +137,16 @@ assign result   = rMessageCounter;
 // = MODULE ASSIGNMENTS
 // ============================================================================
 
-sha1 SHA(.iClk(clk), .iInitial(wInitial), .iValid(wValid), .iDat(wData),
-         .oReady(wReady), .oDat(wDigest));
+sha1 SHA(
+    .iClk(clk), .iInitial(wInitial), .iValid(wValid), .iDat(wData),
+    .oReady(wReady), .oDat(wDigest),
+    .reset(reset)
+);
          
-CollisionChecker COLLISION_CHECKER(.iClk(clk), .iTarget(wTarget), 
-                                   .iData(wDigest),
-                                   .oResult(wCollision));
+CollisionChecker COLLISION_CHECKER(
+    .iClk(clk), .iTarget(wTarget), .iData(wDigest),
+    .oResult(wCollision)
+);
                                    
 // ============================================================================
 // = SHA-1 DIGEST TRACKER LOGIC
