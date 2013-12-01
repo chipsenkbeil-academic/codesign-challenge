@@ -97,8 +97,7 @@ output [31:0] result;
 // ============================================================================
 
 // Efficiency scaling parameters (increase the number of searchers we have)
-parameter       TOTAL_SEARCHERS             = 32;
-parameter       SEARCH_CHUNK                = 32'hFFFFFFFF / TOTAL_SEARCHERS;
+parameter       TOTAL_SEARCHERS             = 16;
 
 // Types associated with the selection bits
 parameter [2:0] TYPE_BASE_ADDRESS           = 3'd0;
