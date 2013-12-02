@@ -97,14 +97,14 @@ output [31:0] result;
 // ============================================================================
 
 // Efficiency scaling parameters (increase the number of searchers we have)
-parameter       TOTAL_SEARCHERS             = 16;
+parameter       TOTAL_SEARCHERS             = 1;
 
 // Types associated with the selection bits
-parameter [2:0] TYPE_BASE_ADDRESS           = 3'd0;
-parameter [2:0] TYPE_START_SEARCH           = 3'd1;
-parameter [2:0] TYPE_RETRIEVE_COLLISION     = 3'd2;
-parameter [2:0] TYPE_HAS_FOUND_COLLISION    = 3'd3;
-parameter [2:0] TYPE_RETRIEVE_TOTAL_DIGESTS = 3'd4;
+parameter [2:0] TYPE_BASE_ADDRESS           = 3'h0;
+parameter [2:0] TYPE_START_SEARCH           = 3'h1;
+parameter [2:0] TYPE_RETRIEVE_COLLISION     = 3'h2;
+parameter [2:0] TYPE_HAS_FOUND_COLLISION    = 3'h3;
+parameter [2:0] TYPE_RETRIEVE_TOTAL_DIGESTS = 3'h4;
 
 // ============================================================================
 // = INTERNAL WIRES/REGISTERS

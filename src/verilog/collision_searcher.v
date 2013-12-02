@@ -62,21 +62,21 @@ output [31:0] result;
 // ============================================================================
 
 // Potential states for internal use
-parameter [3:0] STATE_IDLE                  = 5'd0; // Doing nothing, available 
+parameter [3:0] STATE_IDLE                  = 5'h0; // Doing nothing, available 
                                                     // for the next instruction
                                                     
-parameter [3:0] STATE_LOAD_MESSAGE          = 5'd1; // Loads a word (4 bytes) of
+parameter [3:0] STATE_LOAD_MESSAGE          = 5'h1; // Loads a word (4 bytes) of
                                                     // the message and
                                                     // increments the data index
                                                     
-parameter [3:0] STATE_WAIT_FOR_READY        = 5'd2; // Waits for a ready signal
+parameter [3:0] STATE_WAIT_FOR_READY        = 5'h2; // Waits for a ready signal
                                                     // from SHA-1 module
                                                     
-parameter [3:0] STATE_CHECK_COLLISION       = 5'd3; // Checks collision checker
+parameter [3:0] STATE_CHECK_COLLISION       = 5'h3; // Checks collision checker
                                                     // output to see if a
                                                     // collision has occurred
                                                     
-parameter [3:0] STATE_DONE                  = 5'd4; // Sends done bit and the
+parameter [3:0] STATE_DONE                  = 5'h4; // Sends done bit and the
                                                     // counter value at the
                                                     // collision
 
