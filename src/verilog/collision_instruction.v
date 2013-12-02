@@ -100,11 +100,11 @@ output [31:0] result;
 parameter       TOTAL_SEARCHERS             = 1;
 
 // Types associated with the selection bits
-parameter [2:0] TYPE_BASE_ADDRESS           = 3'h0;
-parameter [2:0] TYPE_START_SEARCH           = 3'h1;
-parameter [2:0] TYPE_RETRIEVE_COLLISION     = 3'h2;
-parameter [2:0] TYPE_HAS_FOUND_COLLISION    = 3'h3;
-parameter [2:0] TYPE_RETRIEVE_TOTAL_DIGESTS = 3'h4;
+parameter       TYPE_BASE_ADDRESS           = 0;
+parameter       TYPE_START_SEARCH           = 1;
+parameter       TYPE_RETRIEVE_COLLISION     = 2;
+parameter       TYPE_HAS_FOUND_COLLISION    = 3;
+parameter       TYPE_RETRIEVE_TOTAL_DIGESTS = 4;
 
 // ============================================================================
 // = INTERNAL WIRES/REGISTERS
@@ -149,6 +149,9 @@ reg             rAnyDone;           // Value of wAnyDone, used to provide a
                                     // clock cycle of delay before wiping our
                                     // searchers
 
+// Simple wire to avoid Quartus confusing rAnyDone register as a clock
+wire            wResetSearchers;
+                                    
 // ============================================================================
 // = WIRE ASSIGNMENTS
 // ============================================================================
@@ -164,6 +167,9 @@ assign wSearchStart = (n == TYPE_START_SEARCH) & start;
 
 // Combine all done signals to see if any searcher has finished
 assign wAnyDone = (| wSearchDone);
+
+// Determine if searchers should be reset
+assign wResetSearchers = (reset | rAnyDone);
 
 // Only allow one result to be piped through if multiple searchers find a
 // solution at the same time (we will use the lowest searcher's result)
@@ -222,7 +228,7 @@ generate
             
             // Custom reset for the searchers, so that all will stop searching 
             // after a collision is found
-            .reset(reset | rAnyDone),
+            .reset(wResetSearchers),
             
             // Only send a start pulse if the instruction type indicates a
             // search should be started
