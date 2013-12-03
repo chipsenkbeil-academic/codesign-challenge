@@ -169,6 +169,8 @@ that I could improve it much more.
 
 ![Second Design Results][second_design_results]
 
+![Second Design Results Closeup][sdr_closeup]
+
 _Note: The results above are using my third design with a single searcher and
 achieve the same performance as with the second design._
 
@@ -196,6 +198,8 @@ of being fast enough to find a collision for 27 bits of zero in under 100
 seconds!
 
 ![Third Design Results][third_design_results]
+
+![Third Design Results Closeup][tdr_closeup]
 
 Observations
 ------------
@@ -282,3 +286,5 @@ rare in what seems to be a very theoretical field.
 
 [second_design_results]: ../img/single_searcher_results.png
 [third_design_results]:  ../img/maximum_searcher_results.png
+[sdr_closeup]:           ../img/single_searcher_results_closeup.png
+[tdr_closeup]:           ../img/maximum_searcher_results_closeup.png
