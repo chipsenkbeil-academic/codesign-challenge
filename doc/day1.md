@@ -167,7 +167,7 @@ So,
 [altera_memory_mapped]: http://www.altera.com/literature/manual/mnl_avalon_spec.pdf
 [altera_iord_iowr_discussion]: http://www.alteraforum.com/forum/showthread.php?t=25299
 
-[reference_results]: /img/codesign_001.png
+[reference_results]: /img/reference_results.png
 [custom_instruction_types]: /img/custom_instruction_types.png
 [avalon_mm_system]: /img/avalon_mm_system.png
 [results_custom_instruction]: http://TODO
