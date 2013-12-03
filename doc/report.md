@@ -192,10 +192,10 @@ that chained off one another to perform additions and the filtering. The entire
 design can be found in my third design's drawings, [here][third_design_drawing].
 
 Below are the results for my design, when I maxed out the DE2-115 using 46
-parallel searchers. The performance improvement is roughly 46/1 over using a
-single searcher, resulting in roughly 798,578 computations per second. Just shy
-of being fast enough to find a collision for 27 bits of zero in under 100
-seconds!
+parallel searchers. This used 95% (108,371) of the DE2-115's logic elements. 
+The performance improvement is roughly 46/1 over using a single searcher, 
+resulting in roughly 798,578 computations per second. Just shy of being fast 
+enough to find a collision for 27 bits of zero in under 100 seconds!
 
 ![Third Design Results][third_design_results]
 
