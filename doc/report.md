@@ -278,7 +278,7 @@ worked out, but the majority of the design can be expanded without issue.
 
 It was a fun assignment that challenged (no pun intended) me to think of how
 I could _apply_ what I _learned_ in class, something that I find to be very
-rare in what seems to be a very theoretical field.
+rare in what seems to be a very theoretically-taught field.
 
 [first_design_drawing]:  ../drawings/hardware-design-1.pdf
 [second_design_drawing]: ../drawings/hardware-design-2.pdf
