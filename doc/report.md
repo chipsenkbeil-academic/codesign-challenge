@@ -230,7 +230,7 @@ The internal hardware continued to operate with the normal clock signal.
 Maxing out my design with 46 searchers (like in design 3), the performance
 is ~27,476,000 digests computed per second!
 
-![Final Run Single][final_run_single]
+![Final Run Maximum][final_run_max]
 
 Observations
 ------------
@@ -315,7 +315,7 @@ rare in what seems to be a very theoretically-taught field.
 [second_design_drawing]: ../drawings/hardware-design-2.pdf
 [third_design_drawing]:  ../drawings/hardware-design-3.pdf
 
-[tdr_single_closeup]:    ../img/second_design_searcher_results_closeup.png
-[tdr_maximum_closeup]:   ../img/third_design_searcher_results_closeup.png
-[final_run_single]:      ../img/single_searcher_results_closeup.png
-[final_run_max]:         ../img/maximum_searcher_results_closeup.png
+[tdr_single_closeup]:  ../img/third_design_single_searcher_results_closeup.png
+[tdr_maximum_closeup]: ../img/third_design_maximum_searcher_results_closeup.png
+[final_run_single]:    ../img/single_searcher_results_closeup.png
+[final_run_max]:       ../img/maximum_searcher_results_closeup.png
