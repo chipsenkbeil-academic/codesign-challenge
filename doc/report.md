@@ -9,21 +9,33 @@ Table of Contents
 -----------------
 
 1. Design Decision
+
     a. What options did I consider?
+
     b. Why did I choose a custom instruction?
     
 2. Architecture Design
+
     a. What was my first design?
+
     b. Where did my first design fail?
+
     c. What was my second design?
+
     d. Where did my second design fail?
+    
     e. What was my third design?
+    
     f. Where did my third design fail?
+    
     g. What was my final design?
     
 3. Observations
+    
     a. What worked with my final design?
+    
     b. What could be improved?
+    
     c. What would I do differently?
     
 4. Final Thoughts
