@@ -2,6 +2,7 @@ The Codesign Challenge: Hash Collision Search
 =============================================
 
 Written by Robert "Chip" Senkbeil
+
 Date is December 3rd, 2013.
 
 Table of Contents
