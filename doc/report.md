@@ -228,7 +228,8 @@ synced to a clock pulse.
 The internal hardware continued to operate with the normal clock signal.
 
 Maxing out my design with 46 searchers (like in design 3), the performance
-is ~27,476,000 digests computed per second!
+is ~27,476,000 digests computed per second! This, like with design 3, was
+roughly a 46/1 ratio improvement!
 
 ![Final Run Maximum][final_run_max]
 
