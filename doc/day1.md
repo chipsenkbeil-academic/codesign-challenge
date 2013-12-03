@@ -160,16 +160,16 @@ where finishing one stage provides a level of improvement over the previous.
 
 So, 
 
-[professor]: http://www.ece.vt.edu/schaum/
-[class]: http://www.ece.vt.edu/schaum/teachcodesign.html
-[other_class]: http://www.ece.vt.edu/ugrad/viewcourse.php?number=4514-49
-[altera_custom_instruction]: http://www.altera.com/literature/ug/ug_nios2_custom_instruction.pdf
-[altera_memory_mapped]: http://www.altera.com/literature/manual/mnl_avalon_spec.pdf
-[altera_iord_iowr_discussion]: http://www.alteraforum.com/forum/showthread.php?t=25299
+[professor]:                    http://www.ece.vt.edu/schaum/
+[class]:                        http://www.ece.vt.edu/schaum/teachcodesign.html
+[other_class]:                  http://www.ece.vt.edu/ugrad/viewcourse.php?number=4514-49
+[altera_custom_instruction]:    http://www.altera.com/literature/ug/ug_nios2_custom_instruction.pdf
+[altera_memory_mapped]:         http://www.altera.com/literature/manual/mnl_avalon_spec.pdf
+[altera_iord_iowr_discussion]:  http://www.alteraforum.com/forum/showthread.php?t=25299
 
-[reference_results]: /img/reference_results.png
-[custom_instruction_types]: /img/custom_instruction_types.png
-[avalon_mm_system]: /img/avalon_mm_system.png
-[results_custom_instruction]: http://TODO
-[results_memory_mapped]: http://TODO
+[reference_results]:            ../img/reference_results.png
+[custom_instruction_types]:     ../img/custom_instruction_types.png
+[avalon_mm_system]:             ../img/avalon_mm_system.png
+[results_custom_instruction]:   http://TODO
+[results_memory_mapped]:        http://TODO
 
