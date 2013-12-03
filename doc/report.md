@@ -18,6 +18,8 @@ Table of Contents
     c. What was my second design?
     d. Where did my second design fail?
     e. What was my third design?
+    f. Where did my third design fail?
+    g. What was my final design?
     
 3. Observations
     a. What worked with my final design?
@@ -167,8 +169,6 @@ second design achieved roughly 17,359 computations per second. While this was
 much better than the software implementation (over 30 times faster), I felt
 that I could improve it much more.
 
-![Second Design Results][second_design_results]
-
 ![Second Design Results Closeup][sdr_closeup]
 
 _Note: The results above are using my third design with a single searcher and
@@ -191,15 +191,46 @@ This was a bit of a hack in my opinion as I ended up using wire assignments
 that chained off one another to perform additions and the filtering. The entire
 design can be found in my third design's drawings, [here][third_design_drawing].
 
+![Third Design Single Results Closeup][tdr_single_closeup]
+
 Below are the results for my design, when I maxed out the DE2-115 using 46
 parallel searchers. This used 95% (108,371) of the DE2-115's logic elements. 
 The performance improvement is roughly 46/1 over using a single searcher, 
 resulting in roughly 798,578 computations per second. Just shy of being fast 
 enough to find a collision for 27 bits of zero in under 100 seconds!
 
-![Third Design Results][third_design_results]
+![Third Design Maximum Results Closeup][tdr_maximum_closeup]
 
-![Third Design Results Closeup][tdr_closeup]
+### Where did my third design fail? ###
+
+Having skimmed over some documentation, I did not realize that the clock enable
+signal was only high for the duration of an instruction. Because of the way I
+designed my hardware, the clock would only be active for a single cycle per
+instruction since each instruction returns immediately, deactivating clock
+enable.
+
+The only reason my design progressed was because of my software, where I
+continuously poll the hardware to see if it was finished. This polling ended
+up acting as the clock for the hardware since the clock and clock enable were
+tied together.
+
+The true performance for a single searcher was:
+
+![Final Run Single][final_run_single]
+
+### What was my final design? ###
+
+The solution to this issue was obviously to untie the clock and clock enable.
+I then added the clock enable to my start logic for both receiving message
+words and initializing the search, ensuring that those two operations were
+synced to a clock pulse.
+
+The internal hardware continued to operate with the normal clock signal.
+
+Maxing out my design with 46 searchers (like in design 3), the performance
+is ~27,476,000 digests computed per second!
+
+![Final Run Single][final_run_single]
 
 Observations
 ------------
@@ -261,7 +292,7 @@ or some other large improvement).
 
 However, given that I was approaching the third week of this assignment, I did
 not want to risk trying another optimization given that my current design
-provided me with a improvement on the order of 10^3.
+provided me with a improvement of ~50,000 times faster.
 
 Final Thoughts
 --------------
@@ -284,7 +315,7 @@ rare in what seems to be a very theoretically-taught field.
 [second_design_drawing]: ../drawings/hardware-design-2.pdf
 [third_design_drawing]:  ../drawings/hardware-design-3.pdf
 
-[second_design_results]: ../img/single_searcher_results.png
-[third_design_results]:  ../img/maximum_searcher_results.png
-[sdr_closeup]:           ../img/single_searcher_results_closeup.png
-[tdr_closeup]:           ../img/maximum_searcher_results_closeup.png
+[tdr_single_closeup]:    ../img/second_design_searcher_results_closeup.png
+[tdr_maximum_closeup]:   ../img/third_design_searcher_results_closeup.png
+[final_run_single]:      ../img/single_searcher_results_closeup.png
+[final_run_max]:         ../img/maximum_searcher_results_closeup.png
