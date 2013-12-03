@@ -110,9 +110,6 @@ parameter       TYPE_RETRIEVE_TOTAL_DIGESTS = 4;
 // = INTERNAL WIRES/REGISTERS
 // ============================================================================
 
-// Clock/clock_enable combined
-wire            wClock;
-
 // Custom start signals for our message accumulator and searchers
 wire            wMessageStart;
 wire            wSearchStart;
@@ -156,14 +153,11 @@ wire            wResetSearchers;
 // = WIRE ASSIGNMENTS
 // ============================================================================
 
-// Combine clock and clock enable for real clock signal
-assign wClock   = clk & clk_en;
-
 // Only enable start signal for message if instruction is that of message
-assign wMessageStart = (n == TYPE_BASE_ADDRESS) & start;
+assign wMessageStart = (n == TYPE_BASE_ADDRESS) & start & clk_en;
 
 // Only enable start signal for searchers if instruction is that of searching
-assign wSearchStart = (n == TYPE_START_SEARCH) & start;
+assign wSearchStart = (n == TYPE_START_SEARCH) & start & clk_en;
 
 // Combine all done signals to see if any searcher has finished
 assign wAnyDone = (| wSearchDone);
@@ -208,7 +202,7 @@ assign result   = (n == TYPE_BASE_ADDRESS)              ? 32'd1         :
 // ============================================================================
 
 MessageCollector MESSAGE_COLLECTOR (
-    .clk(wClock), .reset(reset), 
+    .clk(clk), .reset(reset), 
     
     // Only send a start pulse if the instruction type indicates that we are
     // loading new data into the collector
@@ -224,7 +218,7 @@ generate
     genvar i;
     for (i = 0; i < TOTAL_SEARCHERS; i = i + 1) begin :SEARCHER_GENERATION
         CollisionSearcher COLLISION_SEARCHER(
-            .clk(wClock), 
+            .clk(clk), 
             
             // Custom reset for the searchers, so that all will stop searching 
             // after a collision is found
@@ -268,7 +262,7 @@ endgenerate
 // ============================================================================
 
 // Update the last result when at least one searcher has finished
-always @(posedge wClock, posedge reset) begin
+always @(posedge clk, posedge reset) begin
     if (reset) begin
         rLastResult <= 32'b0;
     end else if (wAnyDone) begin
@@ -278,7 +272,7 @@ end
 
 // Update search status based on a request to start searching and any indicator
 // that we have finished searching
-always @(posedge wClock, posedge reset) begin
+always @(posedge clk, posedge reset) begin
     if (reset) begin
         rSearching <= 1'b0;
     end else if (wSearchStart) begin
@@ -289,7 +283,7 @@ always @(posedge wClock, posedge reset) begin
 end
 
 // Only update our digest counter while we are still searching
-always @(posedge wClock, posedge reset) begin
+always @(posedge clk, posedge reset) begin
     if (reset) begin
         rTotalDigests <= 32'b0;
     end else if (rSearching) begin // TODO: Check that this doesn't get reset because of delay in searching register
@@ -298,7 +292,7 @@ always @(posedge wClock, posedge reset) begin
 end
 
 // Update our done register based on the output signal
-always @(posedge wClock, posedge reset) begin
+always @(posedge clk, posedge reset) begin
     if (reset) begin
         rAnyDone <= 1'b0;
     end else begin
