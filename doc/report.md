@@ -257,6 +257,23 @@ However, given that I was approaching the third week of this assignment, I did
 not want to risk trying another optimization given that my current design
 provided me with a improvement on the order of 10^3.
 
+Final Thoughts
+--------------
+
+I enjoyed this challenge more than I would have first believed. I have never
+been one to enjoy direct competitions as they make me quite nervous; however,
+I ignored the competition aspect of this assignment when working on it and
+focused more on the different designs and what I could do to provide an easy
+software-to-hardware interface (minimal work on the side of the software)
+while also having a very robust hardware design - in terms of scalability -
+that could be expanded without rewriting a lot of the code. Granted, there are
+some limitations mentioned in the improvement section that would need to be
+worked out, but the majority of the design can be expanded without issue.
+
+It was a fun assignment that challenged (no pun intended) me to think of how
+I could _apply_ what I _learned_ in class, something that I find to be very
+rare in what seems to be a very theoretical field.
+
 [first_design_drawing]:  ../drawings/hardware-design-1.pdf
 [second_design_drawing]: ../drawings/hardware-design-2.pdf
 [third_design_drawing]:  ../drawings/hardware-design-3.pdf
