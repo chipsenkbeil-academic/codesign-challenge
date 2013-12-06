@@ -8,11 +8,15 @@ Date is December 3rd, 2013.
 Table of Contents
 -----------------
 
-1. Design Decision
+1. Summary
+    a. What optimizations did I use?
+    b. What was the performance of the final design?
+
+2. Design Decision
     a. What options did I consider?
     b. Why did I choose a custom instruction?
     
-2. Architecture Design
+3. Architecture Design
     a. What was my first design?
     b. Where did my first design fail?
     c. What was my second design?
@@ -20,13 +24,54 @@ Table of Contents
     e. What was my third design?
     f. Where did my third design fail?
     g. What was my final design?
+    h. How did I get more performance?
     
-3. Observations
+4. Observations
     a. What worked with my final design?
     b. What could be improved?
     c. What would I do differently?
     
-4. Final Thoughts
+5. Final Thoughts
+
+Summary
+-------
+
+The following is a summary of the overall report since I realized this report
+got a little out of hand. I wrote it as a series of blog posts that I later
+compiled.
+
+### What optimizations did I use? ###
+
+I used an implementation of the SHA-1 digest calculation in hardware versus the
+provided software solution. Furthermore, I implemented the test of a collision
+in hardware such that I could use the software to simply start the process of
+finding a collision, checking the number of digests calculated, and get the
+counter value associated with a collision.
+
+I used a custom instruction interface since my hardware design allowed me to
+limit the returned values to 32-bit values: the number of digests calculated
+and the counter value associated with a custom instruction.
+
+Finally, after my final design, I realized I could increase the clock speed
+using PLLs. My maxed out design using 46 seachers and 95% of my FPGA failed
+with a 100 MHz clock; however, reducing the searchers to 32 - using less
+chained combinational logic - provided me with correct counter values and
+a greater digest calculation (essentially the same as if I could fit 64
+searchers in a 50 MHz design).
+
+### What was the performance of the final design? ###
+
+Overall, my final design ran with a 100 MHz clock using one PLL to increase
+the clock from 50 MHz to 100 MHz.
+
+The average number of digests computed per second was ~38,091,000 (rounded
+down).
+
+The total logic elements used was 76,310, which used 67% of my board. I could
+actually fit additional searcher logic into my design, but it could not handle
+the faster clock (see what could be improved to understand why).
+
+![Faster Run with 32 Searchers][faster_run_max]
     
 Design Decisions
 ----------------
@@ -216,7 +261,7 @@ tied together.
 
 The true performance for a single searcher was:
 
-![Final Run Single][final_run_single]
+![Final Run Single][normal_run_single]
 
 ### What was my final design? ###
 
@@ -231,7 +276,30 @@ Maxing out my design with 46 searchers (like in design 3), the performance
 is ~27,476,000 digests computed per second! This, like with design 3, was
 roughly a 46/1 ratio improvement!
 
-![Final Run Maximum][final_run_max]
+![Final Run Maximum][normal_run_max]
+
+### How did I get more performance? ###
+
+After maxing out my board in terms of logic elements, I looked into other
+solutions. The most obvious to me was to simply increase the clock speed used
+in my design. Initially, a 50 MHz clock was used; however, I was able to boost
+my clock to 100 MHz using one of the four PLLs available on the board.
+
+The result for a single searcher was the following:
+
+![Faster Single Run][faster_run_single]
+
+As you can see, this was basically double the digests computed from using a
+single searcher on a 50 MHz clock.
+
+I then proceeded to build my design with the maximum supported searchers (46);
+however, because of limitations in my design (described below), the tests and
+result filtering of the searchers failed. Thinking back to my design, I examined
+the timing requirements and found that I could still get a larger number of
+searchers in my design without failing with a 100 MHz clock. To this end, I
+used 32 searchers for 67% of my board:
+
+![Faster Run with 32 Searchers][faster_run_max]
 
 Observations
 ------------
@@ -318,5 +386,10 @@ rare in what seems to be a very theoretically-taught field.
 
 [tdr_single_closeup]:  ../img/third_design_single_searcher_results_closeup.png
 [tdr_maximum_closeup]: ../img/third_design_maximum_searcher_results_closeup.png
-[final_run_single]:    ../img/single_searcher_results_closeup.png
-[final_run_max]:       ../img/maximum_searcher_results_closeup.png
+[normal_run_single]:    ../img/single_searcher_results_closeup.png
+[normal_run_max]:       ../img/maximum_searcher_results_closeup.png
+[faster_run_single]:    ../img/100mhz_single_searcher_results_closeup.png
+[faster_run_max]:       ../img/100mhz_32_searcher_results_closeup.png
+
+[usage]:                ../img/usage.png
+
