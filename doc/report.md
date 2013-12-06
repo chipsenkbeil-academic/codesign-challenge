@@ -9,26 +9,41 @@ Table of Contents
 -----------------
 
 1. Summary
+
     a. What optimizations did I use?
+    
     b. What was the performance of the final design?
 
 2. Design Decision
+
     a. What options did I consider?
+
     b. Why did I choose a custom instruction?
     
 3. Architecture Design
+
     a. What was my first design?
+
     b. Where did my first design fail?
+
     c. What was my second design?
+
     d. Where did my second design fail?
+    
     e. What was my third design?
+    
     f. Where did my third design fail?
+    
     g. What was my final design?
+    
     h. How did I get more performance?
     
 4. Observations
+
     a. What worked with my final design?
+    
     b. What could be improved?
+    
     c. What would I do differently?
     
 5. Final Thoughts
@@ -214,7 +229,7 @@ second design achieved roughly 17,359 computations per second. While this was
 much better than the software implementation (over 30 times faster), I felt
 that I could improve it much more.
 
-![Second Design Results Closeup][sdr_closeup]
+![Second Design Single Results Closeup][tdr_single_closeup]
 
 _Note: The results above are using my third design with a single searcher and
 achieve the same performance as with the second design._
@@ -235,8 +250,6 @@ collision.
 This was a bit of a hack in my opinion as I ended up using wire assignments
 that chained off one another to perform additions and the filtering. The entire
 design can be found in my third design's drawings, [here][third_design_drawing].
-
-![Third Design Single Results Closeup][tdr_single_closeup]
 
 Below are the results for my design, when I maxed out the DE2-115 using 46
 parallel searchers. This used 95% (108,371) of the DE2-115's logic elements. 
@@ -380,9 +393,9 @@ It was a fun assignment that challenged (no pun intended) me to think of how
 I could _apply_ what I _learned_ in class, something that I find to be very
 rare in what seems to be a very theoretically-taught field.
 
-[first_design_drawing]:  ../drawings/hardware-design-1.pdf
-[second_design_drawing]: ../drawings/hardware-design-2.pdf
-[third_design_drawing]:  ../drawings/hardware-design-3.pdf
+[first_design_drawing]:  http://senkbeil.org/ece4530/hardware-design-1.pdf
+[second_design_drawing]: http://senkbeil.org/ece4530/hardware-design-2.pdf
+[third_design_drawing]:  http://senkbeil.org/ece4530/hardware-design-3.pdf
 
 [tdr_single_closeup]:  ../img/third_design_single_searcher_results_closeup.png
 [tdr_maximum_closeup]: ../img/third_design_maximum_searcher_results_closeup.png
